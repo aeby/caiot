@@ -7,12 +7,12 @@ name = "pypi"
 
 [dev-packages]
 
-gunicorn = "*"
 
 
 [packages]
 
-Django = "==1.11.7"
+django = "==1.11.7"
 whitenoise = "==4.0b4"
 django-environ = "==0.4.4"
 "psycopg2" = "==2.7.3.2"
+gunicorn = "==19.7.1"

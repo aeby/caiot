@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0610f91b513c6f0721c911a501740ba2e563831e769d45409567b9ef00bb553c"
+            "sha256": "fd1a85da8f5cece9084e5a5fcf94d75f3cd10f15b8403771e0e1058ba6c786c2"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -40,6 +40,13 @@
                 "sha256:ee2f8405d83137e3328b26b3de01bd715b5395fca22feb919dcc905fb6099cfa"
             ],
             "version": "==0.4.4"
+        },
+        "gunicorn": {
+            "hashes": [
+                "sha256:75af03c99389535f218cc596c7de74df4763803f7b63eb09d77e92b3956b36c6",
+                "sha256:eee1169f0ca667be05db3351a0960765620dad53f53434262ff8901b68a1b622"
+            ],
+            "version": "==19.7.1"
         },
         "psycopg2": {
             "hashes": [
@@ -106,13 +113,5 @@
             "version": "==4.0b4"
         }
     },
-    "develop": {
-        "gunicorn": {
-            "hashes": [
-                "sha256:75af03c99389535f218cc596c7de74df4763803f7b63eb09d77e92b3956b36c6",
-                "sha256:eee1169f0ca667be05db3351a0960765620dad53f53434262ff8901b68a1b622"
-            ],
-            "version": "==19.7.1"
-        }
-    }
+    "develop": {}
 }
