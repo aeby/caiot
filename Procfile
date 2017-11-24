@@ -1,0 +1,1 @@
+web: gunicorn --pythonpath caiotweb caiotweb.wsgi --log-file -
