@@ -5,4 +5,4 @@ from django.shortcuts import render
 
 
 def home(request):
-    return render(request, 'sensor/index.html', {})
+    return render(request, 'index.html', {})

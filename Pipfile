@@ -7,6 +7,7 @@ name = "pypi"
 
 [dev-packages]
 
+ipython = "*"
 
 
 [packages]
@@ -16,3 +17,5 @@ whitenoise = "==4.0b4"
 django-environ = "==0.4.4"
 "psycopg2" = "==2.7.3.2"
 gunicorn = "==19.7.1"
+channels = "==1.1.8"
+asgi-redis = "==1.4.3"
