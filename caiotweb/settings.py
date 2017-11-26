@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'channels',
+    'trafo'
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,5 @@ CHANNEL_LAYERS = {
         "ROUTING": "caiotweb.routing.channel_routing",
     },
 }
+
+TRAFO_SQS_QUEUE_URL = os.environ.get('SQS_QUEUE_URL')

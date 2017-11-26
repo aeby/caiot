@@ -13,4 +13,4 @@ __pycache__/
 # Devs
 .idea
 
-caiotweb/staticfiles
+staticfiles
