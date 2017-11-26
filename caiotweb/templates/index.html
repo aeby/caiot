@@ -3,9 +3,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Caiot</title>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+    <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
 </head>
 <body>
+<section class="wrapper container">
+    <div class="row">
+        <div class="column">
+            <h1>Sensor Relay Test</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column column-10">
+            <div id="status" class="status status-green"></div>
+        </div>
+        <div class="column"><label>Temperature</label></div>
+    </div>
+</section>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>

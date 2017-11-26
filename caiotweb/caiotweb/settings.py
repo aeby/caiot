@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'channels',
-    'sensor'
 ]
 
 MIDDLEWARE = [
