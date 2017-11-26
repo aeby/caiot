@@ -12,22 +12,22 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 
-import environ
+import dj_database_url
+from dotenv import load_dotenv, find_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-env = environ.Env(DEBUG=(bool, False), )
-environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
+load_dotenv(find_dotenv())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'caiotweb.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': dj_database_url.config(default="postgres:///channels-example", conn_max_age=500)
 }
 
 # Password validation
@@ -133,7 +133,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [env('REDIS_URL', default='redis://localhost:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
         "ROUTING": "caiotweb.routing.channel_routing",
     },
