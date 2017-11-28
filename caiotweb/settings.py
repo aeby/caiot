@@ -141,3 +141,7 @@ CHANNEL_LAYERS = {
 }
 
 TRAFO_SQS_QUEUE_URL = os.environ.get('SQS_QUEUE_URL')
+
+TRAFO_MIDDLEWARES = [
+    'trafo.middlewares.body'
+]

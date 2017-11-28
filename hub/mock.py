@@ -16,6 +16,8 @@ deviceNames = ['SBS01', 'SBS02', 'SBS03', 'SBS04', 'SBS05']
 
 iot = boto3.client('iot-data')
 
+msg_count = 0
+
 
 # generate Flow values
 def getFlowValues():
@@ -59,7 +61,7 @@ def getSoundValues():
 
 # Generate each parameter's data input in varying proportions
 while True:
-    time.sleep(1)
+    time.sleep(0.1)
     rnd = random.random()
     if (0 <= rnd < 0.20):
         data = json.dumps(getFlowValues())
@@ -89,3 +91,9 @@ while True:
             topic='/sbs/devicedata/sound',
             payload=data
         )
+    msg_count += 1
+
+    if msg_count > 1200:
+        break
+
+print('Sent %d messages' % msg_count)

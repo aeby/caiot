@@ -6,14 +6,15 @@ import signal
 import sys
 import threading
 import time
+from importlib import import_module
 
 import boto3
+from django.conf import settings
+from django.utils import six
 
 from .signals import transform_finished, transform_started, worker_ready
 
 logger = logging.getLogger('caiot.trafo')
-
-sqs = boto3.client('sqs')
 
 
 class Worker(object):
@@ -33,6 +34,18 @@ class Worker(object):
         self.wait_time = wait_time
         self.termed = False
         self.in_job = False
+        self.middlewares = []
+        self.__load_middleware()
+        self.queue = boto3.resource('sqs').get_queue_by_name(QueueName='caru')
+
+    def __load_middleware(self):
+        for middleware_path in settings.TRAFO_MIDDLEWARES:
+            module = import_module(middleware_path)
+            try:
+                self.middlewares.append(getattr(module, 'transform'))
+            except AttributeError:
+                msg = 'Module "%s" does not define a "transform" attribute' % middleware_path
+                six.reraise(ImportError, ImportError(msg), sys.exc_info()[2])
 
     def install_signal_handler(self):
         signal.signal(signal.SIGTERM, self.sigterm_handler)
@@ -62,37 +75,38 @@ class Worker(object):
         while not self.termed:
             self.in_job = False
             # Long poll for message on provided SQS queue
-            response = sqs.receive_message(
-                QueueUrl=self.sqs_queue_url,
-                AttributeNames=[
-                    'SentTimestamp'
-                ],
-                MaxNumberOfMessages=1,
-                MessageAttributeNames=[
-                    'All'
-                ],
-                WaitTimeSeconds=self.wait_time
+            messages = self.queue.receive_messages(
+                MaxNumberOfMessages=10,
+                VisibilityTimeout=30,
+                WaitTimeSeconds=20
+                # WaitTimeSeconds=self.wait_time
             )
             self.in_job = True
-
-            # If no messages, stall a little to avoid busy-looping then continue
-            if response is None and self.wait_time == 0:
-                time.sleep(0.01)
+            # If no messages...
+            if len(messages) < 1:
+                logger.warn("No messages")
+                # stall a little to avoid busy-looping if wait time is zero...
+                if self.wait_time == 0:
+                    time.sleep(0.02)
+                # then continue
                 continue
 
-            # Create message wrapper
-            logger.debug("Got message on %s", self.sqs_queue_url)
+            logger.debug("Got %d messages on %s", len(messages), self.sqs_queue_url)
 
-            try:
-                transform_started.send(sender=self.__class__, environ={})
-                # logger.debug("Dispatching message on %s to %s", channel, name_that_thing(consumer))
-            except:
-                logger.exception("Error processing message %s:", response)
-            finally:
-                # Send consumer finished so DB conns close etc.
-                transform_finished.send(sender=self.__class__)
+            for message in messages:
+                try:
 
-            self.in_job = False
+                    transform_started.send(sender=self.__class__, environ={})
+                    # logger.debug("Dispatching message on %s to %s", channel, name_that_thing(consumer))
+                    for mw in self.middlewares:
+                        message = mw(message)
+                    print(message.body)
+                    message.delete()
+                except:
+                    logger.exception("Error processing message %s:", message)
+                finally:
+                    # Send consumer finished so DB conns close etc.
+                    transform_finished.send(sender=self.__class__)
 
 
 class WorkerGroup(Worker):
