@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['192.168.1.17']
 
 # Application definition
 
@@ -129,19 +129,22 @@ STATICFILES_DIRS = (
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+REDIS = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+
 # Channel settings
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [REDIS],
         },
         "ROUTING": "caiotweb.routing.channel_routing",
     },
 }
 
-TRAFO_SQS_QUEUE_URL = os.environ.get('SQS_QUEUE_URL')
+TRAFO_SQS_QUEUE_NAME = os.environ.get('SQS_QUEUE_NAME')
 
-TRAFO_MIDDLEWARES = [
-    'trafo.middlewares.body'
+TRAFO_PROCESSORS = [
+    'trafo.processors.parse',
+    'trafo.processors.update_clients',
 ]

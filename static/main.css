@@ -14,3 +14,21 @@
     -moz-box-shadow: 0px 0px 20px 7px rgba(0, 173, 35, 1);
     box-shadow: 0px 0px 20px 7px rgba(0, 173, 35, 1);
 }
+
+.status-red {
+    background-color: rgb(255, 63, 0);
+    -webkit-box-shadow: 0px 0px 20px 7px rgb(255, 63, 0);
+    -moz-box-shadow: 0px 0px 20px 7px rgb(255, 63, 0);
+    box-shadow: 0px 0px 20px 7px rgb(255, 63, 0);
+}
+
+textarea {
+    background-color: #282a36;
+    color: #f8f8f2;
+    height: 20em;
+    border: none;
+    overflow: auto;
+    outline: none;
+    box-shadow: none;
+    resize: none;
+}

@@ -16,16 +16,18 @@
             <h1>Sensor Relay Test</h1>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="padding: 2em 0;">
         <div class="column column-10">
             <div id="status" class="status status-green"></div>
         </div>
-        <div class="column"><label>Temperature</label></div>
+        <div class="column"><label id="temp">Temperature</label></div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <textarea id="logger"></textarea>
+        </div>
     </div>
 </section>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
 <script type="text/javascript" src='{% static "reconnecting-websocket.min.js" %}'></script>
 <script type="text/javascript" src='{% static "sensor.js" %}'></script>
 </body>

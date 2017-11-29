@@ -12,7 +12,7 @@ import time
 
 import boto3
 
-deviceNames = ['SBS01', 'SBS02', 'SBS03', 'SBS04', 'SBS05']
+deviceNames = ['SBS01', 'SBS02', 'SBS03',]# 'SBS04', 'SBS05']
 
 iot = boto3.client('iot-data')
 
@@ -61,7 +61,7 @@ def getSoundValues():
 
 # Generate each parameter's data input in varying proportions
 while True:
-    time.sleep(0.1)
+    time.sleep(1)
     rnd = random.random()
     if (0 <= rnd < 0.20):
         data = json.dumps(getFlowValues())
@@ -93,7 +93,7 @@ while True:
         )
     msg_count += 1
 
-    if msg_count > 1200:
+    if msg_count > 100:
         break
 
 print('Sent %d messages' % msg_count)

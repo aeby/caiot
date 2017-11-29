@@ -25,24 +25,28 @@ class Worker(object):
 
     def __init__(
             self,
-            sqs_queue_url,
+            sqs_queue_name,
             signal_handlers=True,
-            wait_time=20
+            wait_time=20,
+            max_messages=10
     ):
-        self.sqs_queue_url = sqs_queue_url
         self.signal_handlers = signal_handlers
         self.wait_time = wait_time
+        self.max_messages = max_messages
         self.termed = False
         self.in_job = False
-        self.middlewares = []
+        self.__init_queue(sqs_queue_name)
         self.__load_middleware()
-        self.queue = boto3.resource('sqs').get_queue_by_name(QueueName='caru')
+
+    def __init_queue(self, name):
+        self.queue = boto3.resource('sqs').get_queue_by_name(QueueName=name)
 
     def __load_middleware(self):
-        for middleware_path in settings.TRAFO_MIDDLEWARES:
+        self.middlewares = []
+        for middleware_path in settings.TRAFO_PROCESSORS:
             module = import_module(middleware_path)
             try:
-                self.middlewares.append(getattr(module, 'transform'))
+                self.middlewares.append(getattr(module, 'process'))
             except AttributeError:
                 msg = 'Module "%s" does not define a "transform" attribute' % middleware_path
                 six.reraise(ImportError, ImportError(msg), sys.exc_info()[2])
@@ -71,36 +75,33 @@ class Worker(object):
         """
         if self.signal_handlers:
             self.install_signal_handler()
-        logger.info("Listening on queue %s", self.sqs_queue_url)
+        logger.info("Listening on queue %s", self.queue.url)
         while not self.termed:
             self.in_job = False
             # Long poll for message on provided SQS queue
             messages = self.queue.receive_messages(
-                MaxNumberOfMessages=10,
-                VisibilityTimeout=30,
-                WaitTimeSeconds=20
-                # WaitTimeSeconds=self.wait_time
+                MaxNumberOfMessages=self.max_messages,
+                WaitTimeSeconds=self.wait_time
             )
             self.in_job = True
             # If no messages...
             if len(messages) < 1:
-                logger.warn("No messages")
+                logger.debug("No messages received. Try again...")
                 # stall a little to avoid busy-looping if wait time is zero...
                 if self.wait_time == 0:
                     time.sleep(0.02)
                 # then continue
                 continue
 
-            logger.debug("Got %d messages on %s", len(messages), self.sqs_queue_url)
+            logger.debug("Got %d messages on %s", len(messages), self.queue.url)
 
             for message in messages:
                 try:
-
                     transform_started.send(sender=self.__class__, environ={})
                     # logger.debug("Dispatching message on %s to %s", channel, name_that_thing(consumer))
+                    msg = message.body
                     for mw in self.middlewares:
-                        message = mw(message)
-                    print(message.body)
+                        msg = mw(msg)
                     message.delete()
                 except:
                     logger.exception("Error processing message %s:", message)

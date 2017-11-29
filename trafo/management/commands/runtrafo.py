@@ -24,7 +24,7 @@ class Command(BaseCommand):
         self.verbosity = options.get("verbosity", 1)
         self.logger = setup_logger('caiot.trafo', self.verbosity)
         self.n_threads = options.get('threads', 1)
-        self.sqs_queue_url = settings.TRAFO_SQS_QUEUE_URL
+        self.sqs_queue_name = settings.TRAFO_SQS_QUEUE_NAME
         # Choose an appropriate worker.
         worker_kwargs = {}
         if self.n_threads == 1:
@@ -35,10 +35,10 @@ class Command(BaseCommand):
             worker_cls = WorkerGroup
             worker_kwargs['n_threads'] = self.n_threads
         # Run the worker
-        self.logger.info("Running worker against sqs queue %s", self.sqs_queue_url)
+        self.logger.info("Running worker against sqs queue %s", self.sqs_queue_name)
         try:
             worker = worker_cls(
-                sqs_queue_url=self.sqs_queue_url,
+                sqs_queue_name=self.sqs_queue_name,
                 **worker_kwargs
             )
             worker_process_ready.send(sender=worker)
